@@ -3,16 +3,31 @@
 ###########################################################
 #  aws-ca-creds-update
 #  
-#  
+#  Usage:
+#  aws-ca-creds-update.sh -t='tokenserial' -b='baseawsprofilename' \ 
+#    -u='updateawsprofilename' -r='assumerolearn' -s='sessionname' \
+#    -v=tokenval
+#    
+#  - tokenserial can be found in your IAM settings if you're
+#    using a software token like Google Authenticator.
+#  - The profile names are the section identifiers for the profiles
+#    in question within your .aws/credentials file.  "Base"
+#    is the account you use to do the passthrough.  "Update" is
+#    the account you're passing into.
+#  - assumerolearn is the ARN of the role you're assuming in the
+#    target account.
+#  - sessionname uniquely identifies the session.
 #
+#  Credentials are good for one hour.
+#  No output means the operation was successful.
 #
-#
-#
+#  Written by:
+#       Brad Campbell <brad@bluesentryit.com>
 #
 ###########################################################
 
-type jq >/dev/null 2>&1 || { echo >&2 "jq is required for this script, but it's not installed.  Aborting."; exit 1; }
-type aws >/dev/null 2>&1 || { echo >&2 "aws is required for this script, but it's not installed.  Aborting."; exit 1; }
+type jq >/dev/null 2>&1 || { printf >&2 "jq is required for this script, but it's not installed.  Aborting."; exit 1; }
+type aws >/dev/null 2>&1 || { printf >&2 "aws is required for this script, but it's not installed.  Aborting."; exit 1; }
 
 mfa_token_val=000000
 mfa_token_sn=''
@@ -50,7 +65,7 @@ do
             shift
         ;;
         *)
-            echo "Unknown option passed.  Aborting.  Usage is:\naws-ca-creds-update.sh -t='tokenserial' -b='baseawsprofilekey' -u='updateawsprofilekey' -r='assumerolearn' -s='sessionname' -v='tokenval'"
+            printf "Unknown option passed.  Aborting.\nUsage is:\n  aws-ca-creds-update.sh -t='tokenserial' -b='baseawsprofilename' \ \n    -u='updateawsprofilename' -r='assumerolearn' -s='sessionname' \ \n    -v=tokenval\n"
             exit 1
         ;;
     esac
